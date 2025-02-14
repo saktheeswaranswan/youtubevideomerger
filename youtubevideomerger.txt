@@ -1,0 +1,127 @@
+Share
+
+f
+You said:
+givew me an python code to doen load all videos and merge as on file mp4 in colab in 180p 30fps and use cuda fastly of 100 youtube links you can do because its my youtube channel
+
+ChatGPT said:
+Here's a Python script for Google Colab that downloads 100 YouTube videos, resizes them to 180p 30fps, and merges them into a single MP4 file using CUDA acceleration for faster processing.
+
+Steps:
+Install yt-dlp for fast
+
+
+
+
+
+
+You said:
+Share
+
+f
+You said:
+givew me an python code to doen load all videos and merge as on file mp4 in colab in 1080p 30fps and use cuda fastly of 100 youtube links you can do because its my youtube channel
+ChatGPT said:
+Here's a Python script for Google Colab to download 100 YouTube videos, resize them to 1080p 30fps, and merge them into a single MP4 file using CUDA acceleration for fast processing.
+
+Steps in the Script:
+Install yt-dlp – Fast YouTube video downloader.
+Download Videos in 1080p 30fps (if available).
+Convert videos using ffmpeg with CUDA (h264_nvenc) for GPU acceleration.
+Merge all videos into one MP4 file.
+Requirements:
+Google Colab with GPU enabled
+High-speed internet (for fast downloads)
+100 YouTube links (replace with your links)
+Colab Script:
+python
+Copy
+Edit
+import os
+import yt_dlp
+import shutil
+
+# Create directories for downloads and output
+os.makedirs("videos", exist_ok=True)
+os.makedirs("converted", exist_ok=True)
+
+# List of YouTube links (Replace these with your 100 links)
+youtube_links = [
+    "https://www.youtube.com/watch?v=your_video_id1",
+    "https://www.youtube.com/watch?v=your_video_id2",
+    # Add up to 100 links
+]
+
+# yt-dlp options for downloading 1080p 30fps
+download_opts = {
+    'format': 'bestvideo[height<=1080][fps<=30]+bestaudio/best',
+    'outtmpl': 'videos/%(title)s.%(ext)s',
+    'merge_output_format': 'mp4',
+}
+
+# Download videos
+print("Downloading videos...")
+with yt_dlp.YoutubeDL(download_opts) as ydl:
+    ydl.download(youtube_links)
+
+# Convert videos to 1080p 30fps using CUDA acceleration
+print("Converting videos to 1080p 30fps with CUDA...")
+converted_videos = []
+for file in os.listdir("videos"):
+    if file.endswith(".mp4"):
+        input_path = f"videos/{file}"
+        output_path = f"converted/{file}"
+        converted_videos.append(output_path)
+
+        cmd = f"ffmpeg -hwaccel cuda -i \"{input_path}\" -vf \"scale=1920:1080,fps=30\" -c:v h264_nvenc -preset fast -b:v 5000k -c:a aac -strict experimental \"{output_path}\""
+        os.system(cmd)
+
+# Create a text file with all converted videos for merging
+merge_list_path = "merge_list.txt"
+with open(merge_list_path, "w") as f:
+    for video in converted_videos:
+        f.write(f"file '{video}'\n")
+
+# Merge videos into one MP4 file
+output_final = "final_merged_video.mp4"
+cmd_merge = f"ffmpeg -hwaccel cuda -f concat -safe 0 -i {merge_list_path} -c:v h264_nvenc -preset fast -b:v 5000k -c:a aac -strict experimental {output_final}"
+os.system(cmd_merge)
+
+print("✅ Merging completed! Download 'final_merged_video.mp4'")
+How to Use in Colab:
+Open Google Colab → https://colab.research.google.com/
+Enable GPU → Go to Runtime > Change runtime type > Set GPU
+Run the script.
+Features:
+✅ Downloads up to 100 videos
+✅ Converts to 1080p 30fps using CUDA (fast processing)
+✅ Merges all videos into a single MP4 file
+
+Let me know if you need modifications! 🚀
+
+
+
+
+
+
+
+You said:
+give pip install
+ChatGPT said:
+Before running the script in Google Colab, install the necessary dependencies using the following command:
+
+python
+Copy
+Edit
+!pip install yt-dlp ffmpeg-python
+Full Installation & Setup Command
+python
+Copy
+Edit
+# Install yt-dlp (for downloading YouTube videos) and ffmpeg-python (for processing)
+!pip install yt-dlp ffmpeg-python
+
+# Install FFmpeg with CUDA support (only needed if not pre-installed)
+!apt update && apt install -y ffmpeg
+Now Run the Main Script
+After installing, run the Python script I provided earlier to download, convert, and merge videos. 🚀
